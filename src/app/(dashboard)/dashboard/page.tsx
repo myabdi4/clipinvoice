@@ -11,6 +11,11 @@ export default function DashboardPage() {
   const [deals, setDeals] = useState<Deal[]>([]);
   const [loading, setLoading] = useState(true);
   const [userEmail, setUserEmail] = useState("");
+  const [userId, setUserId] = useState("");
+  const [showFeedback, setShowFeedback] = useState(false);
+  const [feedback, setFeedback] = useState("");
+  const [feedbackSent, setFeedbackSent] = useState(false);
+  const [feedbackLoading, setFeedbackLoading] = useState(false);
   const router = useRouter();
   const supabase = createClient();
 
@@ -24,6 +29,7 @@ export default function DashboardPage() {
         return;
       }
       setUserEmail(user.email || "");
+      setUserId(user.id);
 
       const { data } = await supabase
         .from("deals")
@@ -41,6 +47,24 @@ export default function DashboardPage() {
     router.push("/login");
   }
 
+  async function handleFeedback() {
+    if (!feedback.trim()) return;
+    setFeedbackLoading(true);
+
+    await supabase.from("feedback").insert({
+      user_id: userId,
+      message: feedback.trim(),
+    });
+
+    setFeedbackSent(true);
+    setFeedbackLoading(false);
+    setFeedback("");
+    setTimeout(() => {
+      setShowFeedback(false);
+      setFeedbackSent(false);
+    }, 2000);
+  }
+
   const statusColors: Record<string, string> = {
     draft: "bg-gray-100 text-gray-600",
     sent: "bg-blue-100 text-blue-700",
@@ -56,6 +80,12 @@ export default function DashboardPage() {
           ClipInvoice
         </Link>
         <div className="flex items-center gap-4">
+          <button
+            onClick={() => setShowFeedback(true)}
+            className="text-sm text-gray-500 hover:text-blue-900 font-medium transition"
+          >
+            💬 Feedback
+          </button>
           <span className="text-sm text-gray-500">{userEmail}</span>
           <button
             onClick={handleSignOut}
@@ -66,9 +96,66 @@ export default function DashboardPage() {
         </div>
       </header>
 
+      {/* Feedback Modal */}
+      {showFeedback && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 px-4">
+          <div className="bg-white rounded-2xl border border-gray-200 p-6 w-full max-w-md">
+            {feedbackSent ? (
+              <div className="text-center py-6">
+                <div className="text-4xl mb-3">🙏</div>
+                <p className="font-semibold text-gray-800">
+                  Thanks for your feedback!
+                </p>
+                <p className="text-gray-500 text-sm mt-1">
+                  It really helps us improve.
+                </p>
+              </div>
+            ) : (
+              <>
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="font-semibold text-gray-900">
+                    Share your feedback
+                  </h3>
+                  <button
+                    onClick={() => setShowFeedback(false)}
+                    className="text-gray-400 hover:text-gray-600 text-xl"
+                  >
+                    ×
+                  </button>
+                </div>
+                <p className="text-sm text-gray-500 mb-4">
+                  What&apos;s working? What&apos;s missing? We read everything.
+                </p>
+                <textarea
+                  value={feedback}
+                  onChange={(e) => setFeedback(e.target.value)}
+                  placeholder="Type your feedback here..."
+                  rows={4}
+                  className="w-full border border-gray-200 rounded-lg px-4 py-3 text-sm outline-none focus:border-blue-900 resize-none"
+                />
+                <div className="flex gap-2 mt-3">
+                  <button
+                    onClick={() => setShowFeedback(false)}
+                    className="flex-1 border border-gray-200 text-gray-600 rounded-lg py-2.5 text-sm font-medium hover:bg-gray-50 transition"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleFeedback}
+                    disabled={feedbackLoading || !feedback.trim()}
+                    className="flex-1 bg-blue-900 text-white rounded-lg py-2.5 text-sm font-semibold hover:bg-blue-800 transition disabled:opacity-50"
+                  >
+                    {feedbackLoading ? "Sending..." : "Send Feedback"}
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* Main */}
       <main className="max-w-4xl mx-auto px-6 py-8">
-        {/* Top row */}
         <div className="flex items-center justify-between mb-6">
           <div>
             <h2 className="text-2xl font-bold text-gray-900">Your Deals</h2>
@@ -84,7 +171,6 @@ export default function DashboardPage() {
           </Link>
         </div>
 
-        {/* Content */}
         {loading ? (
           <div className="text-center py-20 text-gray-400">Loading...</div>
         ) : deals.length === 0 ? (
