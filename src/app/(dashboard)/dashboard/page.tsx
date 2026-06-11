@@ -80,14 +80,16 @@ export default function DashboardPage() {
         <Link href="/dashboard" className="text-xl font-bold text-blue-900">
           ClipInvoice
         </Link>
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3">
           <button
             onClick={() => setShowFeedback(true)}
             className="text-sm text-gray-500 hover:text-blue-900 font-medium transition"
           >
-            💬 Feedback
+            💬 <span className="hidden sm:inline">Feedback</span>
           </button>
-          <span className="text-sm text-gray-500">{userEmail}</span>
+          <span className="hidden sm:block text-sm text-gray-500">
+            {userEmail}
+          </span>
           <button
             onClick={handleSignOut}
             className="text-sm text-gray-500 hover:text-gray-700"
