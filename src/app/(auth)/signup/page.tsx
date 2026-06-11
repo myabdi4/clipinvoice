@@ -112,7 +112,14 @@ export default function SignupPage() {
             />
           </div>
 
-          {error && <p className="text-red-500 text-sm">{error}</p>}
+          {error && (
+            <p className="text-red-500 text-sm">
+              {error.includes("already registered") ||
+              error.includes("already exists")
+                ? "An account with this email already exists. Try signing in instead."
+                : error}
+            </p>
+          )}
 
           <button
             onClick={handleSignup}
