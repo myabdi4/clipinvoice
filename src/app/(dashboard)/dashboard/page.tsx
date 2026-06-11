@@ -170,7 +170,8 @@ export default function DashboardPage() {
             href="/deals/new"
             className="bg-blue-900 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-blue-800 transition"
           >
-            + New Deal
+            <span className="hidden sm:inline">+ New Deal</span>
+            <span className="sm:hidden text-lg">+</span>
           </Link>
         </div>
 
