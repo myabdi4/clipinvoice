@@ -9,6 +9,9 @@ export const metadata: Metadata = {
   title: "ClipInvoice — Invoicing built for YouTube editors. Not accountants.",
   description:
     "Create professional deals, share with brands, and track payments. Built specifically for YouTube editors.",
+  icons: {
+    icon: "/logo.png",
+  },
 };
 
 export default function RootLayout({
