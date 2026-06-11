@@ -127,7 +127,12 @@ export default function LoginPage() {
       <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8 w-full max-w-md">
         <div className="mb-8">
           <h1 className="text-2xl font-bold text-blue-900">ClipInvoice</h1>
-          <p className="text-gray-500 mt-1">Sign in to your account</p>
+          <p className="text-gray-800 font-medium mt-1">
+            Stop sending Word doc invoices.
+          </p>
+          <p className="text-gray-500 text-sm mt-1">
+            ClipInvoice makes brand deals professional in 2 minutes.
+          </p>
         </div>
 
         <div className="space-y-4">

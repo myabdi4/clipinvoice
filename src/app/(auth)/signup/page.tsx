@@ -42,7 +42,12 @@ export default function SignupPage() {
       <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8 w-full max-w-md">
         <div className="mb-8">
           <h1 className="text-2xl font-bold text-blue-900">ClipInvoice</h1>
-          <p className="text-gray-500 mt-1">Create your account</p>
+          <p className="text-gray-800 font-medium mt-1">
+            Stop sending Word doc invoices.
+          </p>
+          <p className="text-gray-500 text-sm mt-1">
+            ClipInvoice makes brand deals professional in 2 minutes.
+          </p>
         </div>
 
         <div className="space-y-4">
@@ -92,8 +97,12 @@ export default function SignupPage() {
             disabled={loading}
             className="w-full bg-blue-900 text-white rounded-lg py-2.5 text-sm font-semibold hover:bg-blue-800 transition disabled:opacity-50"
           >
-            {loading ? "Creating account..." : "Create Account"}
+            {loading ? "Creating account..." : "Try it instantly — free"}
           </button>
+
+          <p className="text-center text-xs text-gray-400">
+            No credit card required
+          </p>
 
           <p className="text-center text-sm text-gray-500">
             Already have an account?{" "}
