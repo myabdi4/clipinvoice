@@ -177,7 +177,7 @@ export default function DashboardPage() {
           <div>
             <h2 className="text-2xl font-bold text-gray-900">
               {userName
-                ? `Welcome back, ${userName.split(" ")[0]} 👋`
+                ? `Welcome, ${userName.split(" ")[0]} 👋`
                 : "Your Deals"}
             </h2>
             <p className="text-gray-500 text-sm mt-0.5">
