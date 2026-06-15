@@ -21,6 +21,9 @@ export default function SignupPage() {
       password,
       options: {
         emailRedirectTo: "https://clipinvoice.vercel.app/dashboard",
+        data: {
+          full_name: name,
+        },
       },
     });
 
