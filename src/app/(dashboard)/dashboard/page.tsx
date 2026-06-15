@@ -38,7 +38,11 @@ export default function DashboardPage() {
         .eq("id", user.id)
         .single();
 
-      if (profile?.name) setUserName(profile.name);
+      if (profile?.name) {
+        setUserName(profile.name);
+      } else if (user.user_metadata?.full_name) {
+        setUserName(user.user_metadata.full_name);
+      }
 
       const { data } = await supabase
         .from("deals")
