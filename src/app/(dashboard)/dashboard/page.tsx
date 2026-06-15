@@ -12,6 +12,7 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
   const [userEmail, setUserEmail] = useState("");
   const [userId, setUserId] = useState("");
+  const [userName, setUserName] = useState("");
   const [showFeedback, setShowFeedback] = useState(false);
   const [feedback, setFeedback] = useState("");
   const [feedbackSent, setFeedbackSent] = useState(false);
@@ -30,6 +31,14 @@ export default function DashboardPage() {
       }
       setUserEmail(user.email || "");
       setUserId(user.id);
+
+      const { data: profile } = await supabase
+        .from("users")
+        .select("name")
+        .eq("id", user.id)
+        .single();
+
+      if (profile?.name) setUserName(profile.name);
 
       const { data } = await supabase
         .from("deals")
@@ -166,7 +175,11 @@ export default function DashboardPage() {
       <main className="max-w-4xl mx-auto px-6 py-8">
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h2 className="text-2xl font-bold text-gray-900">Your Deals</h2>
+            <h2 className="text-2xl font-bold text-gray-900">
+              {userName
+                ? `Welcome back, ${userName.split(" ")[0]} 👋`
+                : "Your Deals"}
+            </h2>
             <p className="text-gray-500 text-sm mt-0.5">
               Track and manage your brand deals
             </p>
