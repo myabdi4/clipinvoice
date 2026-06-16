@@ -207,18 +207,40 @@ export default function LoginPage() {
           </div>
         </div>
 
-        <div className="flex gap-6">
-          <div>
-            <p className="text-white font-bold text-xl">2 min</p>
-            <p className="text-blue-300 text-xs">To send a deal</p>
+        <div className="space-y-4">
+          <div className="bg-white/10 rounded-xl p-4 border border-white/20">
+            <p className="text-white text-sm font-medium mb-3">
+              Why editors use ClipInvoice:
+            </p>
+            <div className="space-y-2">
+              <p className="text-blue-200 text-sm">
+                ✓ Create a professional invoice in under 2 minutes
+              </p>
+              <p className="text-blue-200 text-sm">
+                ✓ Know the moment your sponsor opens it
+              </p>
+              <p className="text-blue-200 text-sm">
+                ✓ No accounting clutter or spreadsheets
+              </p>
+              <p className="text-blue-200 text-sm">
+                ✓ Free to start — no credit card needed
+              </p>
+            </div>
           </div>
-          <div>
-            <p className="text-white font-bold text-xl">100%</p>
-            <p className="text-blue-300 text-xs">Built for editors</p>
-          </div>
-          <div>
-            <p className="text-white font-bold text-xl">$0</p>
-            <p className="text-blue-300 text-xs">To get started</p>
+
+          <div className="flex gap-6 pt-2">
+            <div>
+              <p className="text-white font-bold text-xl">2 min</p>
+              <p className="text-blue-300 text-xs">To send a deal</p>
+            </div>
+            <div>
+              <p className="text-white font-bold text-xl">100%</p>
+              <p className="text-blue-300 text-xs">Built for editors</p>
+            </div>
+            <div>
+              <p className="text-white font-bold text-xl">$0</p>
+              <p className="text-blue-300 text-xs">To get started</p>
+            </div>
           </div>
         </div>
       </div>

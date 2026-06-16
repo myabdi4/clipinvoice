@@ -149,11 +149,15 @@ export default function SignupPage() {
             disabled={loading}
             className="w-full bg-blue-900 text-white rounded-lg py-2.5 text-sm font-semibold hover:bg-blue-800 transition disabled:opacity-50"
           >
-            {loading ? "Creating account..." : "Try it instantly — free"}
+            {loading ? "Creating account..." : "Create My First Invoice Free"}
           </button>
 
           <p className="text-center text-xs text-gray-400">
             No credit card required
+          </p>
+          <p className="text-center text-xs text-gray-400 mt-1">
+            Built by Abdirahman, a developer who got tired of bad invoicing
+            tools 👋
           </p>
 
           <p className="text-center text-sm text-gray-500">
