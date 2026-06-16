@@ -274,6 +274,16 @@ export default function DashboardPage() {
                       {deal.brand_name}
                     </p>
                     <p className="text-sm text-gray-500 mt-0.5">{deal.title}</p>
+                    {deal.due_date && deal.status !== "paid" && (
+                      <p
+                        className={`text-xs mt-1 font-medium ${new Date(deal.due_date) < new Date() ? "text-red-500" : "text-gray-400"}`}
+                      >
+                        Due: {formatDate(deal.due_date)}{" "}
+                        {new Date(deal.due_date) < new Date()
+                          ? "⚠️ Overdue"
+                          : ""}
+                      </p>
+                    )}
                   </div>
                   <div className="flex items-center gap-4">
                     <span className="font-semibold text-gray-900">

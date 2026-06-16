@@ -13,6 +13,7 @@ export type Deal = {
   sent_at: string | null;
   viewed_at: string | null;
   paid_at: string | null;
+  due_date: string | null;
 };
 
 export type DealDeliverable = {

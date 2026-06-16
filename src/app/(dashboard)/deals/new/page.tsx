@@ -16,6 +16,7 @@ export default function NewDealPage() {
   const [brandName, setBrandName] = useState("");
   const [title, setTitle] = useState("");
   const [totalAmount, setTotalAmount] = useState("");
+  const [dueDate, setDueDate] = useState("");
   const [deliverables, setDeliverables] = useState<Deliverable[]>([
     { description: "", quantity: 1, price: null },
   ]);
@@ -73,6 +74,7 @@ export default function NewDealPage() {
         total_amount: parseFloat(totalAmount),
         status: "draft",
         share_slug: slug,
+        due_date: dueDate || null,
       })
       .select()
       .single();
@@ -174,6 +176,19 @@ export default function NewDealPage() {
               value={totalAmount}
               onChange={(e) => setTotalAmount(e.target.value)}
               placeholder="e.g. 1500"
+              className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm outline-none focus:border-blue-900"
+            />
+          </div>
+
+          {/* Due date */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Payment Due Date
+            </label>
+            <input
+              type="date"
+              value={dueDate}
+              onChange={(e) => setDueDate(e.target.value)}
               className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm outline-none focus:border-blue-900"
             />
           </div>

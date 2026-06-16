@@ -8,6 +8,12 @@ import { formatCurrency, formatDate } from "@/lib/utils";
 import Link from "next/link";
 
 export default function DealDetailPage() {
+  const [editing, setEditing] = useState(false);
+  const [editBrandName, setEditBrandName] = useState("");
+  const [editTitle, setEditTitle] = useState("");
+  const [editAmount, setEditAmount] = useState("");
+  const [editDueDate, setEditDueDate] = useState("");
+  const [saving, setSaving] = useState(false);
   const [deal, setDeal] = useState<Deal | null>(null);
   const [deliverables, setDeliverables] = useState<DealDeliverable[]>([]);
   const [loading, setLoading] = useState(true);
@@ -39,6 +45,10 @@ export default function DealDetailPage() {
 
       setDeal(data);
       setDeliverables(data.deal_deliverables || []);
+      setEditBrandName(data.brand_name);
+      setEditTitle(data.title);
+      setEditAmount(data.total_amount.toString());
+      setEditDueDate(data.due_date ? data.due_date.split("T")[0] : "");
       setLoading(false);
     }
     loadDeal();
@@ -54,6 +64,29 @@ export default function DealDetailPage() {
       .from("deal_events")
       .insert({ deal_id: deal!.id, event_type: status });
     setDeal({ ...deal!, ...updates } as Deal);
+  }
+
+  async function handleSave() {
+    setSaving(true);
+    await supabase
+      .from("deals")
+      .update({
+        brand_name: editBrandName,
+        title: editTitle,
+        total_amount: parseFloat(editAmount),
+        due_date: editDueDate || null,
+      })
+      .eq("id", deal!.id);
+
+    setDeal({
+      ...deal!,
+      brand_name: editBrandName,
+      title: editTitle,
+      total_amount: parseFloat(editAmount),
+      due_date: editDueDate || null,
+    });
+    setSaving(false);
+    setEditing(false);
   }
 
   async function copyLink() {
@@ -110,21 +143,87 @@ export default function DealDetailPage() {
 
       <main className="max-w-2xl mx-auto px-6 py-8">
         {/* Deal header */}
+        {/* Deal header */}
         <div className="flex items-start justify-between mb-6">
           <div>
-            <h2 className="text-2xl font-bold text-gray-900">
-              {deal!.brand_name}
-            </h2>
-            <p className="text-gray-500 mt-0.5">{deal!.title}</p>
-            <p className="text-xs text-gray-400 mt-1">
-              Created {formatDate(deal!.created_at)}
-            </p>
+            {editing ? (
+              <div className="space-y-2">
+                <input
+                  type="text"
+                  value={editBrandName}
+                  onChange={(e) => setEditBrandName(e.target.value)}
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-lg font-bold outline-none focus:border-blue-900"
+                />
+                <input
+                  type="text"
+                  value={editTitle}
+                  onChange={(e) => setEditTitle(e.target.value)}
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-900"
+                />
+                <input
+                  type="number"
+                  value={editAmount}
+                  onChange={(e) => setEditAmount(e.target.value)}
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-900"
+                  placeholder="Amount"
+                />
+                <input
+                  type="date"
+                  value={editDueDate}
+                  onChange={(e) => setEditDueDate(e.target.value)}
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-900"
+                />
+                <div className="flex gap-2">
+                  <button
+                    onClick={handleSave}
+                    disabled={saving}
+                    className="bg-blue-900 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-blue-800 transition disabled:opacity-50"
+                  >
+                    {saving ? "Saving..." : "Save"}
+                  </button>
+                  <button
+                    onClick={() => setEditing(false)}
+                    className="border border-gray-200 text-gray-600 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-50 transition"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div>
+                <h2 className="text-2xl font-bold text-gray-900">
+                  {deal!.brand_name}
+                </h2>
+                <p className="text-gray-500 mt-0.5">{deal!.title}</p>
+                <p className="text-xs text-gray-400 mt-1">
+                  Created {formatDate(deal!.created_at)}
+                </p>
+                {deal!.due_date && deal!.status !== "paid" && (
+                  <p
+                    className={`text-xs mt-1 font-medium ${new Date(deal!.due_date) < new Date() ? "text-red-500" : "text-gray-400"}`}
+                  >
+                    Due: {formatDate(deal!.due_date)}{" "}
+                    {new Date(deal!.due_date) < new Date() ? "⚠️ Overdue" : ""}
+                  </p>
+                )}
+              </div>
+            )}
           </div>
-          <span
-            className={`text-sm font-medium px-3 py-1 rounded-full capitalize ${statusColors[deal!.status]}`}
-          >
-            {deal!.status}
-          </span>
+          <div className="flex items-center gap-2">
+            {!editing && (
+              <button
+                onClick={() => setEditing(true)}
+                className="text-xs text-gray-600 hover:text-blue-900 border border-gray-300 px-3 py-1.5 rounded-lg transition font-medium"
+              >
+                ✏️ Edit
+              </button>
+            )}
+            <span
+              className={`text-sm font-medium px-3 py-1 rounded-full capitalize ${statusColors[deal!.status]}`}
+            >
+              {deal!.status}
+            </span>
+          </div>
         </div>
 
         {/* Deal card */}
