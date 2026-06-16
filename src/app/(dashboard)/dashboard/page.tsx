@@ -61,6 +61,40 @@ export default function DashboardPage() {
     router.push("/login");
   }
 
+  function exportCSV() {
+    if (deals.length === 0) return;
+
+    const headers = [
+      "Brand Name",
+      "Title",
+      "Amount",
+      "Status",
+      "Created At",
+      "Sent At",
+      "Viewed At",
+      "Paid At",
+    ];
+    const rows = deals.map((deal) => [
+      deal.brand_name,
+      deal.title,
+      deal.total_amount,
+      deal.status,
+      deal.created_at ? formatDate(deal.created_at) : "",
+      deal.sent_at ? formatDate(deal.sent_at) : "",
+      deal.viewed_at ? formatDate(deal.viewed_at) : "",
+      deal.paid_at ? formatDate(deal.paid_at) : "",
+    ]);
+
+    const csv = [headers, ...rows].map((row) => row.join(",")).join("\n");
+    const blob = new Blob([csv], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "clipinvoice-deals.csv";
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
   async function handleFeedback() {
     if (!feedback.trim()) return;
     setFeedbackLoading(true);
@@ -181,20 +215,31 @@ export default function DashboardPage() {
           <div>
             <h2 className="text-2xl font-bold text-gray-900">
               {userName
-                ? `Welcome, ${userName.split(" ")[0]} 👋`
+                ? `Welcome back, ${userName.split(" ")[0]} 👋`
                 : "Your Deals"}
             </h2>
             <p className="text-gray-500 text-sm mt-0.5">
               Track and manage your brand deals
             </p>
           </div>
-          <Link
-            href="/deals/new"
-            className="bg-blue-900 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-blue-800 transition"
-          >
-            <span className="hidden sm:inline">+ New Deal</span>
-            <span className="sm:hidden text-lg">+</span>
-          </Link>
+          <div className="flex items-center gap-2">
+            {deals.length > 0 && (
+              <button
+                onClick={exportCSV}
+                className="border border-gray-200 text-gray-600 px-3 py-2 rounded-lg text-sm font-medium hover:bg-gray-50 transition"
+              >
+                <span className="hidden sm:inline">Export CSV</span>
+                <span className="sm:hidden">📊</span>
+              </button>
+            )}
+            <Link
+              href="/deals/new"
+              className="bg-blue-900 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-blue-800 transition"
+            >
+              <span className="hidden sm:inline">+ New Deal</span>
+              <span className="sm:hidden text-lg">+</span>
+            </Link>
+          </div>
         </div>
 
         {loading ? (
