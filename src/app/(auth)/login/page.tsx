@@ -318,6 +318,24 @@ export default function LoginPage() {
               Continue with Google
             </button>
 
+            <div className="flex items-center gap-3">
+              <div className="flex-1 h-px bg-gray-200"></div>
+              <span className="text-xs text-gray.400">or</span>
+              <div className="flex-1 h-px bg-gray-200"></div>
+            </div>
+
+            <Link
+              href="/demo"
+              className="w-full flex flex-col items-center justify-center bg-gray-50 border border-gray-200 rounded-lg py-3 text-sm hover:bg-gray-100 transition"
+            >
+              <span className="font-medium text-gray-700">
+                🎬 See it in action
+              </span>
+              <span className="text-xs text-gray-400 mt-0.5">
+                No account required
+              </span>
+            </Link>
+
             <p className="text-center text-sm text-gray-500">
               Don&apos;t have an account?{" "}
               <Link
