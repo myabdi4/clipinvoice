@@ -4,27 +4,27 @@ export default function WelcomePage() {
   return (
     <div className="min-h-screen bg-white">
       {/* Nav */}
-      <nav className="px-6 py-4 flex items-center justify-between border-b border-gray-100">
+      <nav className="px-4 py-4 flex items-center justify-between border-b border-gray-100">
         <div className="flex items-center gap-2">
           <img
             src="/logo.png"
             alt="ClipInvoice"
-            className="w-8 h-8 object-contain"
+            className="w-7 h-7 object-contain"
           />
-          <span className="text-xl font-bold text-blue-900">ClipInvoice</span>
+          <span className="text-lg font-bold text-blue-900">ClipInvoice</span>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
           <Link
             href="/login"
-            className="text-sm text-gray-500 hover:text-gray-700"
+            className="text-sm text-gray-500 hover:text-gray-700 hidden sm:block"
           >
             Sign in
           </Link>
           <Link
             href="/signup"
-            className="bg-blue-900 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-blue-800 transition"
+            className="bg-blue-900 text-white px-3 py-2 rounded-lg text-sm font-semibold hover:bg-blue-800 transition"
           >
-            Get started free
+            Get started
           </Link>
         </div>
       </nav>
@@ -34,7 +34,7 @@ export default function WelcomePage() {
         <div className="inline-flex items-center gap-2 bg-green-50 border border-green-200 text-green-700 text-xs font-semibold px-3 py-1.5 rounded-md mb-6">
           🎬 Built specifically for YouTube editors
         </div>
-        <h1 className="text-5xl font-bold text-gray-900 leading-tight mb-6">
+        <h1 className="text-3xl sm:text-5xl font-bold text-gray-900 leading-tight mb-6">
           Brands judge you by
           <br />
           <span className="text-blue-900">how you invoice them.</span>
