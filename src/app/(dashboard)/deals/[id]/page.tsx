@@ -1,4 +1,5 @@
 "use client";
+import { PDFDocument, rgb, StandardFonts } from "pdf-lib";
 
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase";
@@ -87,6 +88,257 @@ export default function DealDetailPage() {
     });
     setSaving(false);
     setEditing(false);
+  }
+
+  async function downloadPDF() {
+    const pdfDoc = await PDFDocument.create();
+    const page = pdfDoc.addPage([595, 842]);
+    const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
+    const boldFont = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
+
+    const navy = rgb(0.118, 0.227, 0.541);
+    const green = rgb(0.02, 0.588, 0.412);
+    const gray = rgb(0.4, 0.4, 0.4);
+    const lightGray = rgb(0.95, 0.95, 0.95);
+    const darkText = rgb(0.1, 0.1, 0.1);
+
+    const { width, height } = page.getSize();
+    const margin = 50;
+
+    // Header background
+    page.drawRectangle({
+      x: 0,
+      y: height - 90,
+      width,
+      height: 90,
+      color: navy,
+    });
+
+    // ClipInvoice branding
+    page.drawText("ClipInvoice", {
+      x: margin,
+      y: height - 45,
+      size: 22,
+      font: boldFont,
+      color: rgb(1, 1, 1),
+    });
+    page.drawText("BRAND DEAL INVOICE", {
+      x: margin,
+      y: height - 65,
+      size: 8,
+      font: boldFont,
+      color: rgb(0.7, 0.8, 1),
+    });
+
+    // Status badge top right - only show for paid or viewed
+    if (deal!.status === "paid" || deal!.status === "viewed") {
+      const statusColor = deal!.status === "paid" ? green : rgb(0.8, 0.6, 0);
+      page.drawRectangle({
+        x: width - margin - 70,
+        y: height - 60,
+        width: 70,
+        height: 22,
+        color: statusColor,
+        borderRadius: 4,
+      });
+      page.drawText(deal!.status.toUpperCase(), {
+        x: width - margin - 70 + 10,
+        y: height - 52,
+        size: 8,
+        font: boldFont,
+        color: rgb(1, 1, 1),
+      });
+    }
+
+    // Brand name + title
+    page.drawText(deal!.brand_name, {
+      x: margin,
+      y: height - 130,
+      size: 24,
+      font: boldFont,
+      color: darkText,
+    });
+    page.drawText(deal!.title, {
+      x: margin,
+      y: height - 155,
+      size: 12,
+      font,
+      color: gray,
+    });
+
+    // Meta info
+    page.drawText(`Created: ${formatDate(deal!.created_at)}`, {
+      x: margin,
+      y: height - 178,
+      size: 9,
+      font,
+      color: gray,
+    });
+    if (deal!.due_date) {
+      const isOverdue =
+        new Date(deal!.due_date) < new Date() && deal!.status !== "paid";
+      page.drawText(
+        `Due: ${formatDate(deal!.due_date)}${isOverdue ? " — OVERDUE" : ""}`,
+        {
+          x: margin,
+          y: height - 192,
+          size: 9,
+          font: boldFont,
+          color: isOverdue ? rgb(0.8, 0.1, 0.1) : gray,
+        },
+      );
+    }
+
+    // Divider
+    page.drawLine({
+      start: { x: margin, y: height - 210 },
+      end: { x: width - margin, y: height - 210 },
+      thickness: 0.5,
+      color: lightGray,
+    });
+
+    // Total amount box
+    page.drawRectangle({
+      x: margin,
+      y: height - 285,
+      width: width - margin * 2,
+      height: 60,
+      color: lightGray,
+      borderRadius: 6,
+    });
+    page.drawText("TOTAL AMOUNT", {
+      x: margin + 15,
+      y: height - 243,
+      size: 8,
+      font: boldFont,
+      color: gray,
+    });
+    page.drawText(
+      `$${deal!.total_amount.toLocaleString("en-US", { minimumFractionDigits: 2 })}`,
+      {
+        x: margin + 15,
+        y: height - 268,
+        size: 26,
+        font: boldFont,
+        color: navy,
+      },
+    );
+
+    if (deliverables.length > 0) {
+      page.drawText("DELIVERABLES", {
+        x: margin,
+        y: height - 315,
+        size: 8,
+        font: boldFont,
+        color: gray,
+      });
+
+      page.drawRectangle({
+        x: margin,
+        y: height - 348,
+        width: width - margin * 2,
+        height: 22,
+        color: navy,
+        borderRadius: 4,
+      });
+
+      page.drawText("Description", {
+        x: margin + 12,
+        y: height - 340,
+        size: 9,
+        font: boldFont,
+        color: rgb(1, 1, 1),
+      });
+
+      page.drawText("Qty", {
+        x: width - margin - 40,
+        y: height - 340,
+        size: 9,
+        font: boldFont,
+        color: rgb(1, 1, 1),
+      });
+
+      let yPos = height - 368;
+      deliverables.forEach((d, i) => {
+        if (i % 2 === 0) {
+          page.drawRectangle({
+            x: margin,
+            y: yPos - 6,
+            width: width - margin * 2,
+            height: 22,
+            color: lightGray,
+          });
+        }
+        page.drawText(d.description, {
+          x: margin + 12,
+          y: yPos,
+          size: 10,
+          font,
+          color: darkText,
+        });
+        page.drawText(`${d.quantity}`, {
+          x: width - margin - 30,
+          y: yPos,
+          size: 10,
+          font,
+          color: gray,
+        });
+        yPos -= 28;
+      });
+
+      page.drawLine({
+        start: { x: margin, y: yPos - 5 },
+        end: { x: width - margin, y: yPos - 5 },
+        thickness: 0.5,
+        color: lightGray,
+      });
+      page.drawText("Total", {
+        x: margin + 12,
+        y: yPos - 22,
+        size: 10,
+        font: boldFont,
+        color: darkText,
+      });
+      page.drawText(
+        `$${deal!.total_amount.toLocaleString("en-US", { minimumFractionDigits: 2 })}`,
+        {
+          x: width - margin - 80,
+          y: yPos - 22,
+          size: 10,
+          font: boldFont,
+          color: navy,
+        },
+      );
+    }
+
+    // Footer
+    page.drawRectangle({ x: 0, y: 0, width, height: 45, color: lightGray });
+    page.drawText("Generated by ClipInvoice · clipinvoice.vercel.app", {
+      x: margin,
+      y: 16,
+      size: 8,
+      font,
+      color: gray,
+    });
+    page.drawText(
+      `Invoice date: ${new Date().toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}`,
+      {
+        x: width - margin - 150,
+        y: 16,
+        size: 8,
+        font,
+        color: gray,
+      },
+    );
+
+    const pdfBytes = await pdfDoc.save();
+    const blob = new Blob([pdfBytes], { type: "application/pdf" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${deal!.brand_name}-invoice.pdf`;
+    a.click();
+    URL.revokeObjectURL(url);
   }
 
   async function copyLink() {
@@ -277,6 +529,14 @@ export default function DealDetailPage() {
               </button>
             </div>
           </div>
+
+          {/* Download PDF */}
+          <button
+            onClick={downloadPDF}
+            className="w-full flex items-center justify-center gap-2 border border-gray-200 text-gray-700 rounded-lg py-2.5 text-sm font-medium hover:bg-gray-50 transition"
+          >
+            📄 Download PDF Invoice
+          </button>
 
           {/* Actions */}
           {deal!.status !== "paid" && (
