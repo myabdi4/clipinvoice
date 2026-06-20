@@ -38,6 +38,32 @@ export default function PublicDealPage() {
           .from("deal_events")
           .insert({ deal_id: data.id, event_type: "viewed" });
         data.status = "viewed";
+
+        // Send view notification email
+        const { data: dealOwner } = await supabase
+          .from("users")
+          .select("email")
+          .eq("id", data.user_id)
+          .single();
+
+        if (dealOwner?.email) {
+          fetch("/api/send-email", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              to: dealOwner.email,
+              subject: `👀 ${data.brand_name} just viewed your invoice`,
+              html: `
+                <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
+                  <h2 style="color: #1E3A8A;">Good news!</h2>
+                  <p><strong>${data.brand_name}</strong> just opened your invoice for "${data.title}".</p>
+                  <p style="color: #666;">Amount: $${data.total_amount.toLocaleString()}</p>
+                  <a href="${window.location.origin}/deals/${data.id}" style="display: inline-block; background: #1E3A8A; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; margin-top: 16px;">View Deal</a>
+                </div>
+              `,
+            }),
+          }).catch((err) => console.error("Failed to send notification:", err));
+        }
       }
 
       setDeal(data);
